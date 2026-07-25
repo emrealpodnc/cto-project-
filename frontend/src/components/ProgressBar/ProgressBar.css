@@ -1,0 +1,25 @@
+.progress-container{
+    position:relative;
+    width:120px;
+    height:22px;
+    background:#e5e7eb;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    background:#e5ec04;
+    border-radius:20px;
+    transition:0.3s;
+}
+
+.progress-text{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    font-size:12px;
+    font-weight:600;
+    color:#111827;
+}
