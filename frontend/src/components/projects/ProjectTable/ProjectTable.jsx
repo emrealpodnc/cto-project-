@@ -1,12 +1,33 @@
-import ProgressBar from "../../ProgressBar/ProgressBar";
 import "./ProjectTable.css";
+import ProgressBar from "../../ProgressBar/ProgressBar";
+
 import {
   MdVisibility,
   MdEdit,
-  MdDelete
+  MdDelete,
+  MdPerson,
 } from "react-icons/md";
-import { MdPerson } from "react-icons/md";
+
+import { useEffect, useState } from "react";
+import { getProjects } from "../../../services/projectService";
+
 function ProjectTable() {
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const data = await getProjects();
+        console.log(data);
+        setProjects(data);
+      } catch (error) {
+        console.error("Projeler alınamadı:", error);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
   return (
     <div className="project-table-container">
       <table className="project-table">
@@ -22,59 +43,48 @@ function ProjectTable() {
         </thead>
 
         <tbody>
-          <tr>
- <td>CTO Takip Sistemi</td>
-            <td>
-  <div className="manager-info">
-    <MdPerson className="manager-icon" />
-    <span>Emre Yılmaz</span>
-  </div>
-</td>
-            <td>
-              <span className="status active">Devam Ediyor</span>
-            </td>
-            <td>
-  <ProgressBar progress={75} />
-</td>
-            <td>15.08.2026</td>
-           <td>
-  <div className="action-buttons">
+          {projects.map((project) => (
+            <tr key={project.id}>
+              <td>{project.projeAdi}</td>
 
-    <button className="view-btn">
-      <MdVisibility />
-    </button>
+              <td>
+                <div className="manager-info">
+                  <MdPerson className="manager-icon" />
+                  <span>{project.projeYoneticisiAdi}</span>
+                </div>
+              </td>
 
-    <button className="edit-btn">
-      <MdEdit />
-    </button>
+              <td>
+                <span className="status active">
+                  {project.durum}
+                </span>
+              </td>
 
-    <button className="delete-btn">
-      <MdDelete />
-    </button>
+              <td>
+                <ProgressBar
+                  progress={project.tamamlanmaYuzdesi}
+                />
+              </td>
 
-  </div>
-</td>
-          </tr>
+              <td>{project.bitisTarihi}</td>
 
-          <tr>
- <td>ERP Entegrasyonu</td>
-            <td>
-  <div className="manager-info">
-    <MdPerson className="manager-icon" />
-    <span>Ayşenur Demir</span>
-  </div>
-</td>
-            <td>
-              <span className="status risk">Riskli</span>
-            </td>
-            <td>
-  <ProgressBar progress={40} />
-</td>
-            <td>25.08.2026</td>
-            <td>
-              <button>Detay</button>
-            </td>
-          </tr>
+              <td>
+                <div className="action-buttons">
+                  <button className="view-btn">
+                    <MdVisibility />
+                  </button>
+
+                  <button className="edit-btn">
+                    <MdEdit />
+                  </button>
+
+                  <button className="delete-btn">
+                    <MdDelete />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

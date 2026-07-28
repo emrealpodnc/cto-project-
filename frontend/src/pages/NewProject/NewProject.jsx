@@ -1,15 +1,17 @@
 import { useState } from "react";
-
+import { createProject } from "../../services/projectService";
 import "./NewProject.css";
 
 function NewProject() {
     const [proje, setProje] = useState({
     projeAdi: "",
-    projeYoneticisi: "",
+    projeYoneticisiId: 1,
     baslangicTarihi: "",
     bitisTarihi: "",
-    durum: "Devam Ediyor",
-    aciklama: ""
+    durum: "DEVAM_EDIYOR",
+    oncelik: "ORTA",
+    aciklama: "",
+    tamamlanmaYuzdesi: 0
 });
 
 const handleChange = (e) => {
@@ -21,8 +23,19 @@ const handleChange = (e) => {
         [name]: value
     }));
 };
-const handleSave = () => {
-    console.log(JSON.stringify(proje, null, 2));
+const handleSave = async () => {
+    try {
+        const sonuc = await createProject(proje);
+
+        console.log("Kayıt başarılı:", sonuc);
+
+        alert("Proje başarıyla oluşturuldu!");
+
+    } catch (error) {
+        console.error(error);
+
+        alert("Proje oluşturulamadı!");
+    }
 };
   return (
     <div className="new-project-page">
@@ -46,13 +59,13 @@ const handleSave = () => {
 
         <div className="form-group">
           <label>Proje Yöneticisi</label>
-  <input
-    type="text"
-    name="projeYoneticisi"
-    placeholder="proje yöneticisi adını giriniz"
-    value={proje.projeYoneticisi}
+  <select
+    name="projeYoneticisiId"
+    value={proje.projeYoneticisiId}
     onChange={handleChange}
-/>
+>
+    <option value={1}>Ayşenur Hanım</option>
+</select>
         </div>
 
     <div className="date-row">
@@ -79,21 +92,24 @@ const handleSave = () => {
 
 </div>
 
-        <div className="form-group">
-          <label>Durum</label>
+        
 
-        <select
-    name="durum"
-    value={proje.durum}
-    onChange={handleChange}
->
-    <option>Devam Ediyor</option>
-    <option>Planlandı</option>
-    <option>Beklemede</option>
-    <option>Tamamlandı</option>
-    <option>Riskli</option>
-</select>
-        </div>
+        <div className="form-group">
+    <label>Durum</label>
+
+    <select
+        name="durum"
+        value={proje.durum}
+        onChange={handleChange}
+    >
+        <option value="PLANLANDI">Planlandı</option>
+        <option value="DEVAM_EDIYOR">Devam Ediyor</option>
+        <option value="BEKLEMEDE">Beklemede</option>
+        <option value="TAMAMLANDI">Tamamlandı</option>
+        <option value="RISKLI">Riskli</option>
+    </select>
+</div>
+        
 
         <div className="form-group">
           <label>Açıklama</label>
