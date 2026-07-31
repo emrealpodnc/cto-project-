@@ -1,6 +1,7 @@
 import "./ProjectTable.css";
+import { useNavigate } from "react-router-dom";
 import ProgressBar from "../../ProgressBar/ProgressBar";
-
+import { useAuth } from "../../../context/AuthContext";
 import {
   MdVisibility,
   MdEdit,
@@ -9,24 +10,62 @@ import {
 } from "react-icons/md";
 
 import { useEffect, useState } from "react";
-import { getProjects } from "../../../services/projectService";
+import {
+    getProjects,
+    getProjectsByManager,
+    deleteProject
+} from "../../../services/projectService";
 
-function ProjectTable() {
+function ProjectTable({ durumFiltresi, aramaMetni }) {
+  
   const [projects, setProjects] = useState([]);
+  const navigate = useNavigate();
+  const { rol, kullaniciId } = useAuth();
+ const loadProjects = async () => {
+    try {
+
+        let data;
+
+        if (rol === "PROJECT_MANAGER") {
+            data = await getProjectsByManager(kullaniciId);
+        } else {
+            data = await getProjects();
+        }
+
+        setProjects(data);
+
+    } catch (error) {
+        console.error("Projeler alınamadı:", error);
+    }
+};
+
+const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm(
+        "Bu projeyi silmek istediğinize emin misiniz?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+
+        await deleteProject(id);
+
+        alert("Proje başarıyla silindi.");
+
+        loadProjects();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Proje silinemedi.");
+    }
+};
 
   useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const data = await getProjects();
-        console.log(data);
-        setProjects(data);
-      } catch (error) {
-        console.error("Projeler alınamadı:", error);
-      }
-    };
-
     loadProjects();
-  }, []);
+}, []);
 
   return (
     <div className="project-table-container">
@@ -43,22 +82,67 @@ function ProjectTable() {
         </thead>
 
         <tbody>
-          {projects.map((project) => (
+  {projects
+    .filter((project) => {
+      const durumUygun =
+        durumFiltresi === "" || project.durum === durumFiltresi;
+
+      const aramaUygun =
+        project.projeAdi
+          .toLowerCase()
+          .includes(aramaMetni.toLowerCase());
+
+      return durumUygun && aramaUygun;
+    })
+    .map((project) => (
             <tr key={project.id}>
               <td>{project.projeAdi}</td>
 
               <td>
                 <div className="manager-info">
                   <MdPerson className="manager-icon" />
-                  <span>{project.projeYoneticisiAdi}</span>
+                  <span>{project.projeYoneticisi}</span>
                 </div>
               </td>
 
-              <td>
-                <span className="status active">
-                  {project.durum}
-                </span>
-              </td>
+             <td>
+  <span
+    className="status"
+   style={{
+  backgroundColor:
+    project.durum === "PLANLANDI"
+      ? "#F5F5F5"
+      : project.tamamlanmaYuzdesi <= 30
+      ? "#FFEBEE"
+      : project.tamamlanmaYuzdesi <= 70
+      ? "#FFF3E0"
+      : project.tamamlanmaYuzdesi < 100
+      ? "#E8F5E9"
+      : "#D0F0C0",
+
+  color:
+    project.durum === "PLANLANDI"
+      ? "#9CA3AF"
+      : project.tamamlanmaYuzdesi <= 30
+      ? "#C62828"
+      : project.tamamlanmaYuzdesi <= 70
+      ? "#EF6C00"
+      : project.tamamlanmaYuzdesi < 100
+      ? "#67af6b"
+      : "#02830b",
+}}
+  >
+    {project.durum === "DEVAM_EDIYOR"
+  ? "Devam Ediyor"
+  : project.durum === "BEKLEMEDE"
+  ? "Beklemede"
+  : project.durum === "RISKLI"
+  ? "Riskli"
+  : project.durum === "TAMAMLANDI"
+  ? "Tamamlandı"
+  : "Planlandı"}
+  </span>
+</td>
 
               <td>
                 <ProgressBar
@@ -70,17 +154,30 @@ function ProjectTable() {
 
               <td>
                 <div className="action-buttons">
-                  <button className="view-btn">
-                    <MdVisibility />
-                  </button>
+                  <button
+  className="view-btn"
+  onClick={() => navigate(`/projects/${project.id}`)}
+>
+  <MdVisibility />
+</button>
 
-                  <button className="edit-btn">
-                    <MdEdit />
-                  </button>
+                {(rol === "ADMIN" || rol === "CTO") && (
+  <button
+    className="edit-btn"
+    onClick={() => navigate(`/projects/edit/${project.id}`)}
+  >
+    <MdEdit />
+  </button>
+)}
 
-                  <button className="delete-btn">
-                    <MdDelete />
-                  </button>
+  {(rol === "ADMIN" || rol === "CTO") && (
+  <button
+    className="delete-btn"
+    onClick={() => handleDelete(project.id)}
+  >
+    <MdDelete />
+  </button>
+)}
                 </div>
               </td>
             </tr>

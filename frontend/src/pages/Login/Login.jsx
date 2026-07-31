@@ -2,45 +2,46 @@ import { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { FaChartLine, FaEye, FaEyeSlash } from "react-icons/fa";
-
+import { useAuth } from "../../context/AuthContext";
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const navigate = useNavigate();
-const handleLogin = async () => {
+    const [kullaniciAdi, setKullaniciAdi] = useState("");
+    const [sifre, setSifre] = useState("");
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const handleLogin = async () => {
   console.log("Login butonuna basıldı");
   try {
-    const response = await fetch("http://localhost:8086/api/users/login", {
+    const response = await fetch("http://localhost:8086/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
+     body: JSON.stringify({
+  kullaniciAdi,
+  sifre,
+}),
     });
 
     const data = await response.json();
 
     if (response.ok) {
 
-      alert(data.message);
+ login(data);
 
-      // Daha sonra kullanıcı bilgilerini burada saklayacağız
-      localStorage.setItem("email", email);
+  alert("Giriş başarılı.");
 
-      // Dashboard sayfasına yönlendir
-      navigate("/dashboard");
+  navigate("/dashboard");
 
-    } else {
-      alert(data.message);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Sunucuya bağlanılamadı.");
-  }
+} else {
+
+  alert("Kullanıcı adı veya şifre hatalı.");
+
+}
+  }catch (error) {
+  console.error("Hata:", error);
+  alert("Sunucuya bağlanılamadı.");
+}
 };
   return (
     <div className="login-container">
@@ -62,13 +63,15 @@ const handleLogin = async () => {
         </div>
         <hr className="divider" />
         <div className="login-form">
-  <label>E-posta</label>
+  <label>Kullanıcı Adı</label>
 
- <input
-  type="email"
-  placeholder="E-posta adresinizi giriniz"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
+<input
+  type="text"
+  name="kullaniciAdi"
+  placeholder="Kullanıcı adınızı giriniz"
+  value={kullaniciAdi}
+  onChange={(e) => setKullaniciAdi(e.target.value)}
+  autoComplete="off"
 />
   <label>Şifre</label>
 
@@ -76,9 +79,11 @@ const handleLogin = async () => {
 
   <input
   type={showPassword ? "text" : "password"}
+  name="sifre"
   placeholder="Şifrenizi giriniz"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
+  value={sifre}
+  onChange={(e) => setSifre(e.target.value)}
+  autoComplete="off"
 />
 
   <button
@@ -97,18 +102,7 @@ const handleLogin = async () => {
 >
   Giriş Yap
 </button>
-  <p className="signup-text">
-  Hesabın yok mu?
-</p>
-
-<button
-  className="signup-button"
-  type="button"
-  onClick={() => {navigate("/signup");
-  }}
->
-  Kayıt Ol
-</button>
+  
 </div>
 
       </div>

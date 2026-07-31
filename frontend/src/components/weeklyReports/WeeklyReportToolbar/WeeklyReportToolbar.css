@@ -1,0 +1,71 @@
+.project-toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.project-toolbar h2{
+
+    margin:0;
+
+    color:#1e293b;
+
+}
+
+.toolbar-actions{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.toolbar-actions input{
+
+    width:250px;
+
+    padding:10px 15px;
+
+    border:1px solid #ddd;
+
+    border-radius:8px;
+
+}
+
+.toolbar-actions select{
+
+    padding:10px;
+
+    border-radius:8px;
+
+    border:1px solid #ddd;
+
+}
+
+.toolbar-actions button{
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:10px 20px;
+
+    cursor:pointer;
+
+}
+
+.toolbar-actions button:hover{
+
+    background:#1d4ed8;
+
+}

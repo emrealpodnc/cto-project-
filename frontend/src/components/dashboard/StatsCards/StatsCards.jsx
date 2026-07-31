@@ -52,6 +52,12 @@ function StatsCards() {
   color="#dc2626"
 />
 
+<DashboardCard
+  title="Haftalık Rapor"
+  value={dashboard.toplamRapor}
+  color="#ea580c"
+/>
+
     </div>
   );
 }

@@ -1,9 +1,14 @@
 import "./ProjectToolbar.css";
 import { useNavigate } from "react-router-dom";
-
-function ProjectToolbar() {
+import { useAuth } from "../../../context/AuthContext";
+function ProjectToolbar({
+  durumFiltresi,
+  setDurumFiltresi,
+  aramaMetni,
+  setAramaMetni
+}) {
   const navigate = useNavigate();
-
+  const { rol } = useAuth();
   const handleNewProjectClick = () => {
     navigate("/projects/new");
   };
@@ -16,25 +21,28 @@ function ProjectToolbar() {
       <div className="toolbar-actions">
 
         <input
-          type="text"
-          placeholder="🔍 Proje Ara..."
-        />
+  type="text"
+  placeholder="🔍 Proje Ara..."
+  value={aramaMetni}
+  onChange={(e) => setAramaMetni(e.target.value)}
+/>
+        <select
+  value={durumFiltresi}
+  onChange={(e) => setDurumFiltresi(e.target.value)}
+>
+  <option value="">Tüm Durumlar</option>
+  <option value="DEVAM_EDIYOR">Devam Ediyor</option>
+  <option value="TAMAMLANDI">Tamamlandı</option>
+  <option value="RISKLI">Riskli</option>
+  <option value="PLANLANDI">Planlandı</option>
+  <option value="BEKLEMEDE">Beklemede</option>
+</select>
 
-        <select>
-
-          <option>Tüm Durumlar</option>
-
-          <option>Devam Ediyor</option>
-
-          <option>Tamamlandı</option>
-
-          <option>Riskli</option>
-
-        </select>
-
-        <button onClick={() => navigate("/projects/new")}>
-  + Yeni Proje
-</button>
+     {(rol === "ADMIN" || rol === "CTO") && (
+  <button onClick={handleNewProjectClick}>
+    + Yeni Proje
+  </button>
+)}
 
       </div>
 

@@ -1,11 +1,32 @@
-import { useState } from "react";
-import { createProject } from "../../services/projectService";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+    createProject,
+    getProjectById,
+    updateProject
+} from "../../services/projectService";
 import "./NewProject.css";
+import { getUsers } from "../../services/userService";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Slider from "@mui/material/Slider";
+import { styled } from "@mui/material/styles";
+const ColoredSlider = styled(Slider)(({ value }) => ({
 
+  color:
+    value <= 30
+      ? "#e53935"
+      : value <= 70
+      ? "#fb8c00"
+      : "#43a047",
+
+}));
 function NewProject() {
-    const [proje, setProje] = useState({
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [proje, setProje] = useState({ 
     projeAdi: "",
-    projeYoneticisiId: 1,
+    projeYoneticisiId: "",
     baslangicTarihi: "",
     bitisTarihi: "",
     durum: "DEVAM_EDIYOR",
@@ -13,7 +34,7 @@ function NewProject() {
     aciklama: "",
     tamamlanmaYuzdesi: 0
 });
-
+const [users, setUsers] = useState([]);
 const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -23,26 +44,88 @@ const handleChange = (e) => {
         [name]: value
     }));
 };
+
+useEffect(() => {
+
+    if (!id) return;
+
+    const loadProject = async () => {
+        try {
+
+            const data = await getProjectById(id);
+
+           setProje({
+                projeAdi: data.projeAdi,
+                projeYoneticisiId: data.projeYoneticisiId,
+                baslangicTarihi: data.baslangicTarihi || "",
+                bitisTarihi: data.bitisTarihi || "",
+                durum: data.durum,
+                oncelik: data.oncelik,
+                aciklama: data.aciklama || "",
+                tamamlanmaYuzdesi: data.tamamlanmaYuzdesi || 0
+            });
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    loadProject();
+
+}, [id]);
+
+useEffect(() => {
+    const loadUsers = async () => {
+        try {
+            const data = await getUsers();
+            setUsers(data);
+        } catch (error) {
+            console.error("Kullanıcılar yüklenemedi:", error);
+        }
+    };
+
+    loadUsers();
+}, []);
+
 const handleSave = async () => {
+
     try {
-        const sonuc = await createProject(proje);
 
-        console.log("Kayıt başarılı:", sonuc);
+        if (id) {
 
-        alert("Proje başarıyla oluşturuldu!");
+            const sonuc = await updateProject(id, proje);
+
+            console.log("Güncelleme başarılı:", sonuc);
+
+            alert("Proje başarıyla güncellendi!");
+            navigate("/projects");
+
+        } else {
+
+            const sonuc = await createProject(proje);
+
+            console.log("Kayıt başarılı:", sonuc);
+
+            alert("Proje başarıyla oluşturuldu!");
+            navigate("/projects");
+        }
 
     } catch (error) {
+
         console.error(error);
 
-        alert("Proje oluşturulamadı!");
+        alert("İşlem başarısız!");
     }
-};
+};;
   return (
     <div className="new-project-page">
 
-      <h1>Yeni Proje</h1>
-      <p className="page-description">
-    Yeni bir proje oluşturmak için aşağıdaki bilgileri doldurun.
+      <h1>{id ? "Projeyi Düzenle" : "Yeni Proje"}</h1>
+
+<p className="page-description">
+  {id
+    ? "Proje bilgilerini güncelleyebilirsiniz."
+    : "Yeni bir proje oluşturmak için aşağıdaki bilgileri doldurun."}
 </p>
       <div className="project-form">
 
@@ -59,13 +142,26 @@ const handleSave = async () => {
 
         <div className="form-group">
           <label>Proje Yöneticisi</label>
-  <select
-    name="projeYoneticisiId"
-    value={proje.projeYoneticisiId}
-    onChange={handleChange}
->
-    <option value={1}>Ayşenur Hanım</option>
-</select>
+  <Autocomplete
+    options={users}
+    getOptionLabel={(option) => option.adSoyad}
+    value={
+        users.find((user) => user.id === Number(proje.projeYoneticisiId)) || null
+    }
+    onChange={(event, newValue) => {
+        setProje({
+            ...proje,
+            projeYoneticisiId: newValue ? newValue.id : ""
+        });
+    }}
+    renderInput={(params) => (
+        <TextField
+            {...params}
+            label="Proje Yöneticisi"
+            placeholder="Yazarak arayın..."
+        />
+    )}
+/>
         </div>
 
     <div className="date-row">
@@ -109,7 +205,36 @@ const handleSave = async () => {
         <option value="RISKLI">Riskli</option>
     </select>
 </div>
-        
+        <div className="form-group">
+  <label>İlerleme Durumu (%{proje.tamamlanmaYuzdesi})</label>
+
+  <ColoredSlider
+  value={Number(proje.tamamlanmaYuzdesi)}
+  min={0}
+  max={100}
+  step={5}
+  valueLabelDisplay="auto"
+  onChange={(event, newValue) => {
+
+    let yeniDurum = proje.durum;
+
+    if (newValue === 0) {
+      yeniDurum = "PLANLANDI";
+    } else if (newValue === 100) {
+      yeniDurum = "TAMAMLANDI";
+    } else {
+      yeniDurum = "DEVAM_EDIYOR";
+    }
+
+    setProje({
+      ...proje,
+      tamamlanmaYuzdesi: newValue,
+      durum: yeniDurum,
+    });
+
+  }}
+/>
+</div>
 
         <div className="form-group">
           <label>Açıklama</label>
@@ -127,9 +252,12 @@ const handleSave = async () => {
 
         <div className="button-group">
 
-          <button className="cancel-btn">
-            İptal
-          </button>
+          <button
+    className="cancel-btn"
+    onClick={() => navigate("/projects")}
+>
+    İptal
+</button>
 
        <button
     className="save-btn"

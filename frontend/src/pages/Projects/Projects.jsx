@@ -1,28 +1,30 @@
 import "./Projects.css";
+import { useState } from "react";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Header from "../../components/Header/Header";
-
+import Layout from "../../components/Layout/Layout";
 import ProjectToolbar from "../../components/projects/ProjectToolbar/ProjectToolbar";
 import ProjectTable from "../../components/projects/ProjectTable/ProjectTable";
 
 function Projects() {
+
+  const [durumFiltresi, setDurumFiltresi] = useState("");
+  const [aramaMetni, setAramaMetni] = useState("");
   return (
-    <div className="dashboard-layout">
+    <Layout>
 
-      <Sidebar />
+     <ProjectToolbar
+    durumFiltresi={durumFiltresi}
+    setDurumFiltresi={setDurumFiltresi}
+    aramaMetni={aramaMetni}
+    setAramaMetni={setAramaMetni}
+/>
 
-      <div className="dashboard-content">
+   <ProjectTable
+    durumFiltresi={durumFiltresi}
+    aramaMetni={aramaMetni}
+/>
 
-        <Header />
-
-        <ProjectToolbar />
-
-        <ProjectTable />
-
-      </div>
-
-    </div>
+    </Layout>
   );
 }
 

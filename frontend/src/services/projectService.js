@@ -5,7 +5,24 @@ export const getProjects = async () => {
     return response.data;
 };
 
+export const getProjectById = async (id) => {
+    const response = await api.get(`/projects/${id}`);
+    return response.data;
+};
+
 export const createProject = async (project) => {
     const response = await api.post("/projects", project);
+    return response.data;
+};
+export const updateProject = async (id, project) => {
+    const response = await api.put(`/projects/${id}`, project);
+    return response.data;
+};
+export const deleteProject = async (id) => {
+    await api.delete(`/projects/${id}`);
+};
+
+export const getProjectsByManager = async (kullaniciId) => {
+    const response = await api.get(`/projects/manager/${kullaniciId}`);
     return response.data;
 };
