@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import { getProjectById } from "../../../services/projectService";
 import Sidebar from "../../Sidebar/Sidebar";
 import Header from "../../Header/Header";
-
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 function ProjectDetailCard({ projectId }) {
 
     const [project, setProject] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -90,11 +93,17 @@ function ProjectDetailCard({ projectId }) {
                             <span>{project.bitisTarihi}</span>
                         </div>
 
-                        <div className="detail-item">
-                            <strong>Oluşturulma Tarihi</strong>
-                            <span>{project.olusturmaTarihi}</span>
-                        </div>
+                        
+                        <div className="detail-footer">
 
+                        <button
+                        className="back-btn"
+                        onClick={() => navigate("/projects")}>
+                        <FaArrowLeft />
+                        Projelere Dön
+                        </button>   
+                         
+                        </div>
                     </div>
 
                 </div>

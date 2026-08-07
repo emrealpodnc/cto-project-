@@ -68,4 +68,5 @@ public class WeeklyReport {
     // Genel not
     @Column(columnDefinition = "TEXT")
     private String genelNot;
+   
 }

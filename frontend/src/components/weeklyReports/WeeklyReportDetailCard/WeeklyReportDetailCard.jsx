@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { getWeeklyReportById } from "../../../services/weeklyReportService";
 import Sidebar from "../../Sidebar/Sidebar";
 import Header from "../../Header/Header";
-
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 function WeeklyReportDetailCard({ reportId }) {
 
     const [report, setReport] = useState(null);
-
+    const navigate = useNavigate();
     useEffect(() => {
 
         const loadReport = async () => {
@@ -100,7 +101,17 @@ function WeeklyReportDetailCard({ reportId }) {
                             <strong>Genel Not :</strong>
                             <p>{report.genelNot}</p>
                         </div>
+                        <div className="detail-footer">
 
+                        <button
+                        type="button"
+                        className="back-btn"
+                        onClick={() => navigate("/weekly-reports")}>
+                        <FaArrowLeft />
+                        Haftalık Raporlara Dön
+                        </button>
+
+                     </div>
                     </div>
 
                 </div>

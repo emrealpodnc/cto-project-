@@ -1,40 +1,101 @@
-.dashboard-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 120px;
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.08);
-}
+.dashboard-card{
 
-.card-content h3 {
-    font-size: 16px;
-    color: #64748b;
-    margin-bottom: 12px;
-}
+    position: relative;
 
-.card-content h2 {
-    font-size: 36px;
-    font-weight: 700;
-    color: #1e293b;
-}
+    background:#ffffff;
 
-.card-header{
+    border-radius:16px;
+
+    padding:22px;
+
+    height:170px;
+
     display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    transition:
+        transform .30s ease,
+        box-shadow .30s ease;
+
+    overflow:hidden;
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-8px) scale(1.02);
+
+    box-shadow:
+        0 20px 40px rgba(15,23,42,.12),
+        0 8px 20px rgba(37,99,235,.10);
+
+}
+
+.card-top{
+
+    display:flex;
+
     align-items:center;
-    gap:10px;
-    margin-bottom:20px;
+
+    gap:15px;
+
 }
 
-.card-header svg{
-    font-size:28px;
-    color:#475569;
+.icon-box{
+
+    width:56px;
+
+    height:56px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
 }
 
-.card-header h3{
-    margin:0;
+.icon-box svg{
+
+    font-size:30px;
+
+}
+
+.card-title{
+
     font-size:20px;
-    color:#475569;
+
+    font-weight:600;
+
+    color:#334155;
+
 }
+
+.card-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-end;
+
+}
+
+.card-content h2{
+
+    margin:0;
+
+    font-size:46px;
+
+    font-weight:700;
+
+    color:#0F172A;
+
+}
+

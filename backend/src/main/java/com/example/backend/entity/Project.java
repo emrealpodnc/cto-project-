@@ -21,7 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
-
+import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
@@ -54,6 +54,7 @@ public class Project {
 
     private LocalDate bitisTarihi;
 
+    private LocalDateTime olusturmaTarihi = LocalDateTime.now();
     @Enumerated(EnumType.STRING)
     private Oncelik oncelik;
 }

@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.entity.User;
+import com.example.backend.enums.Role;
 import com.example.backend.repository.UserRepository;
 
 @Service
@@ -23,10 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByKullaniciAdi(kullaniciAdi)
                 .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı."));
 
+        Role role = user.getRol() != null ? user.getRol() : Role.PROJECT_MANAGER;
+
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getKullaniciAdi())
                 .password(user.getSifre())
-                .roles(user.getRol().name())
+                .roles(role.name())
                 .build();
     }
 }

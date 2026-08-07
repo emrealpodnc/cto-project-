@@ -35,24 +35,25 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/**",
-                                "/users/**",          
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
+        .requestMatchers(
+                "/auth/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+                "/swagger-resources/**",
+                "/webjars/**"
+        ).permitAll()
 
-                        .anyRequest().authenticated())
+        .anyRequest().authenticated()
+)
 
-                .authenticationProvider(authenticationProvider)
+        .authenticationProvider(authenticationProvider)
 
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+.addFilterBefore(
+        jwtAuthenticationFilter,
+        UsernamePasswordAuthenticationFilter.class
+);
 
-        return http.build();
+return http.build();
     }
 }

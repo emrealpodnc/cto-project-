@@ -1,4 +1,5 @@
 import "./WeeklyReports.css";
+import { useState } from "react";
 
 import Layout from "../../components/Layout/Layout";
 
@@ -6,15 +7,23 @@ import WeeklyReportToolbar from "../../components/weeklyReports/WeeklyReportTool
 import WeeklyReportTable from "../../components/weeklyReports/WeeklyReportTable/WeeklyReportTable";
 
 function WeeklyReports() {
+
+  const [aramaMetni, setAramaMetni] = useState("");
+
   return (
-  <Layout>
+    <Layout>
 
-    <WeeklyReportToolbar />
+      <WeeklyReportToolbar
+        aramaMetni={aramaMetni}
+        setAramaMetni={setAramaMetni}
+      />
 
-    <WeeklyReportTable />
+      <WeeklyReportTable
+        aramaMetni={aramaMetni}
+      />
 
-  </Layout>
-);
+    </Layout>
+  );
 }
 
 export default WeeklyReports;

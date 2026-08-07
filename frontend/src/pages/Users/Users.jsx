@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Layout from "../../components/Layout/Layout";
 import api from "../../services/api";
 
@@ -12,6 +13,7 @@ function Users() {
   const [adSoyad, setAdSoyad] = useState("");
   const [kullaniciAdi, setKullaniciAdi] = useState("");
   const [sifre, setSifre] = useState("");
+  const [sifreGorunur, setSifreGorunur] = useState(false);
   const [rol, setRol] = useState("");
   const [aktifMi, setAktifMi] = useState(true);
 
@@ -41,6 +43,7 @@ function Users() {
     setAdSoyad("");
     setKullaniciAdi("");
     setSifre("");
+    setSifreGorunur(false);
     setRol("");
     setAktifMi(true);
     setModalAcik(true);
@@ -53,6 +56,7 @@ function Users() {
     setAdSoyad("");
     setKullaniciAdi("");
     setSifre("");
+    setSifreGorunur(false);
     setRol("");
     setAktifMi(true);
   };
@@ -63,6 +67,7 @@ function Users() {
     setAdSoyad(user.adSoyad);
     setKullaniciAdi(user.kullaniciAdi);
     setSifre("");
+    setSifreGorunur(false);
     setRol(user.rol);
     setAktifMi(user.aktifMi);
     setModalAcik(true);
@@ -78,7 +83,6 @@ function Users() {
           aktifMi,
         };
 
-        // Şifre boşsa backend mevcut şifreyi korur.
         if (sifre.trim() !== "") {
           guncellemeVerisi.sifre = sifre;
         }
@@ -112,6 +116,10 @@ function Users() {
   return (
     <Layout>
       <h2>Kullanıcı Yönetimi</h2>
+
+      <div style={{ margin: "12px 0 20px", color: "#475569" }}>
+        Yalnızca admin kullanıcılar kullanıcı oluşturma, düzenleme ve pasifleştirme işlemlerini yapabilir.
+      </div>
 
       <div style={{ margin: "20px 0" }}>
         <button onClick={modalAc} type="button">
@@ -202,17 +210,33 @@ function Users() {
                 onChange={(e) => setKullaniciAdi(e.target.value)}
               />
 
-              <input
-                type="password"
-                placeholder={
-                  duzenlemeModu
-                    ? "Şifre (değiştirmek için doldurun)"
-                    : "Şifre"
-                }
-                required={!duzenlemeModu}
-                value={sifre}
-                onChange={(e) => setSifre(e.target.value)}
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  style={{ width: "100%", boxSizing: "border-box", paddingRight: "48px" }}
+                  type={sifreGorunur ? "text" : "password"}
+                  placeholder={duzenlemeModu ? "Yeni Şifre" : "Şifre"}
+                  required={!duzenlemeModu}
+                  value={sifre}
+                  onChange={(e) => setSifre(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  aria-label={sifreGorunur ? "Şifreyi gizle" : "Şifreyi göster"}
+                  onClick={() => setSifreGorunur(!sifreGorunur)}
+                  style={{
+                    position: "absolute",
+                    right: "8px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                  }}
+                >
+                  {sifreGorunur ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
 
               <select value={rol} onChange={(e) => setRol(e.target.value)}>
                 <option value="">Rol Seçiniz</option>

@@ -56,7 +56,7 @@ public class ProjectService {
 
     public List<ProjectResponseDTO> tumProjeleriGetir() {
 
-        return projectRepository.findAll()
+        return projectRepository.findAllByOrderByBitisTarihiAsc()
                 .stream()
                 .map(projectMapper::toResponse)
                 .collect(Collectors.toList());
@@ -116,7 +116,7 @@ public List<ProjectResponseDTO> onceligeGoreProjeleriGetir(Oncelik oncelik) {
 public List<ProjectResponseDTO> projeYoneticisininProjeleri(Long kullaniciId) {
 
     return projectRepository
-            .findByProjeYoneticisiId(kullaniciId)
+            .findByProjeYoneticisiIdOrderByBitisTarihiAsc(kullaniciId)
             .stream()
             .map(projectMapper::toResponse)
             .collect(Collectors.toList());

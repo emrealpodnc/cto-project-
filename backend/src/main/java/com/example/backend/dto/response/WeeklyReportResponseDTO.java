@@ -34,5 +34,7 @@ public class WeeklyReportResponseDTO {
     private String genelNot;
 
     private String olusturanKullanici;
+    
+    private Long buHaftaEklenenRapor;
 
 }

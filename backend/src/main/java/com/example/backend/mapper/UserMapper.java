@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.example.backend.dto.request.UserRequestDTO;
 import com.example.backend.dto.response.UserResponseDTO;
 import com.example.backend.entity.User;
+import com.example.backend.enums.Role;
 
 @Component
 public class UserMapper {
@@ -15,7 +16,7 @@ public class UserMapper {
 
         user.setAdSoyad(dto.getAdSoyad());
         user.setSifre(dto.getSifre());
-        user.setRol(dto.getRol());
+        user.setRol(dto.getRol() != null ? dto.getRol() : Role.PROJECT_MANAGER);
         user.setKullaniciAdi(dto.getKullaniciAdi());
         return user;
     }

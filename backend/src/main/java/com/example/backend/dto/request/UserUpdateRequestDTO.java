@@ -19,7 +19,7 @@ public class UserUpdateRequestDTO {
 
     /*
      * Şifre güncellemede isteğe bağlıdır. null veya boş gelirse mevcut parola
-     * hash'i korunur; yalnızca dolu bir değer geldiğinde parola değiştirilir.
+     * korunur; yalnızca dolu bir değer geldiğinde parola değiştirilir.
      */
     private String sifre;
 

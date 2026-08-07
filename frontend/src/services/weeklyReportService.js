@@ -5,6 +5,11 @@ export const getWeeklyReports = async () => {
     return response.data;
 };
 
+export const getWeeklyReportsByManager = async (kullaniciId) => {
+    const response = await api.get(`/weekly-reports/manager/${kullaniciId}`);
+    return response.data;
+};
+
 export const getWeeklyReportById = async (id) => {
     const response = await api.get(`/weekly-reports/${id}`);
     return response.data;

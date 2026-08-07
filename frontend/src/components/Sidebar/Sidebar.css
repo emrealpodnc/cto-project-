@@ -1,14 +1,36 @@
 .sidebar{
-    width:260px;
+
+    width:280px;
+
     min-height:100vh;
-    background:#0f172a;
+
+    background:linear-gradient(
+        180deg,
+        #0f172a 0%,
+        #111827 50%,
+        #1e293b 100%
+    );
+
     color:white;
-    padding:25px;
+
+    padding:28px 22px;
+
+    display:flex;
+
+    flex-direction:column;
+
 }
 
 .logo{
-    text-align:center;
-    margin-bottom:40px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:45px;
+
 }
 
 .logo h2{
@@ -61,29 +83,122 @@
 
 .logout{
 
-    margin-top:50px;
+    margin-top:auto;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    padding-top:22px;
 
     color:#f87171;
 
 }
 .menu-item{
+
     display:flex;
+
     align-items:center;
+
     gap:15px;
 
     text-decoration:none;
-    color:white;
 
-    padding:16px 20px;
-    border-radius:10px;
+    color:#e2e8f0;
 
-    transition:.2s;
+    padding:16px 18px;
+
+    border-radius:14px;
+
+    transition:.25s;
+
+    margin-bottom:8px;
+
+    font-weight:500;
+
 }
 
 .menu-item:hover{
-    background:#1e293b;
+
+    background:rgba(255,255,255,.08);
+
+    transform:translateX(5px);
+
 }
 
 .menu-item.active{
-    background:#24314d;
+
+    background:linear-gradient(
+        90deg,
+        #2563eb,
+        #3b82f6
+    );
+
+    color:white;
+
+    box-shadow:0 10px 25px rgba(37,99,235,.35);
+
+}
+.logo-icon{
+
+    width:55px;
+
+    height:55px;
+
+    border-radius:16px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:26px;
+
+    color:white;
+
+    box-shadow:0 10px 25px rgba(37,99,235,.35);
+
+}
+.logo-text h2{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+.logo-text p{
+
+    margin-top:4px;
+
+    color:#94a3b8;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+
+}
+.sub-menu{
+
+    margin-left:28px;
+
+    font-size:15px;
+
+    opacity:.9;
+
+    padding:12px 18px;
+
+}
+.sub-menu:hover{
+
+    transform:translateX(6px);
+
 }

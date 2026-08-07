@@ -9,21 +9,31 @@ function Projects() {
 
   const [durumFiltresi, setDurumFiltresi] = useState("");
   const [aramaMetni, setAramaMetni] = useState("");
+  const [oncelikFiltresi, setOncelikFiltresi] = useState("");
+const [yoneticiFiltresi, setYoneticiFiltresi] = useState("");
   return (
     <Layout>
 
-     <ProjectToolbar
+  <ProjectToolbar
     durumFiltresi={durumFiltresi}
     setDurumFiltresi={setDurumFiltresi}
+
+    oncelikFiltresi={oncelikFiltresi}
+    setOncelikFiltresi={setOncelikFiltresi}
+
+    yoneticiFiltresi={yoneticiFiltresi}
+    setYoneticiFiltresi={setYoneticiFiltresi}
+
     aramaMetni={aramaMetni}
     setAramaMetni={setAramaMetni}
 />
 
-   <ProjectTable
+  <ProjectTable
     durumFiltresi={durumFiltresi}
+    oncelikFiltresi={oncelikFiltresi}
+    yoneticiFiltresi={yoneticiFiltresi}
     aramaMetni={aramaMetni}
 />
-
     </Layout>
   );
 }

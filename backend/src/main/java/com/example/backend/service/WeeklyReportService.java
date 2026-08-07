@@ -9,6 +9,7 @@ import com.example.backend.dto.request.WeeklyReportRequestDTO;
 import com.example.backend.dto.response.WeeklyReportResponseDTO;
 import com.example.backend.entity.Project;
 import com.example.backend.entity.WeeklyReport;
+import com.example.backend.enums.ProjeDurumu;
 import com.example.backend.mapper.WeeklyReportMapper;
 import com.example.backend.repository.ProjectRepository;
 import com.example.backend.repository.WeeklyReportRepository;
@@ -39,12 +40,39 @@ public class WeeklyReportService {
 
         report = weeklyReportRepository.save(report);
 
+        project.setTamamlanmaYuzdesi(dto.getTamamlanmaYuzdesi());
+
+        if (dto.getTamamlanmaYuzdesi() == 100) {
+
+            project.setDurum(ProjeDurumu.TAMAMLANDI);
+
+        } else if (dto.getTamamlanmaYuzdesi() > 0) {
+
+            project.setDurum(ProjeDurumu.DEVAM_EDIYOR);
+
+        } else {
+
+            project.setDurum(ProjeDurumu.PLANLANDI);
+
+        }
+
+        projectRepository.save(project);
+
         return weeklyReportMapper.toResponse(report);
     }
 
     public List<WeeklyReportResponseDTO> tumRaporlariGetir() {
 
         return weeklyReportRepository.findAllByOrderByRaporTarihiDesc()
+                .stream()
+                .map(weeklyReportMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<WeeklyReportResponseDTO> projeYoneticisininRaporlari(Long kullaniciId) {
+
+        return weeklyReportRepository
+                .findByProjectProjeYoneticisiIdOrderByRaporTarihiDesc(kullaniciId)
                 .stream()
                 .map(weeklyReportMapper::toResponse)
                 .collect(Collectors.toList());
@@ -79,6 +107,24 @@ public class WeeklyReportService {
 
         report = weeklyReportRepository.save(report);
 
+        project.setTamamlanmaYuzdesi(dto.getTamamlanmaYuzdesi());
+
+        if (dto.getTamamlanmaYuzdesi() == 100) {
+
+            project.setDurum(ProjeDurumu.TAMAMLANDI);
+
+        } else if (dto.getTamamlanmaYuzdesi() > 0) {
+
+            project.setDurum(ProjeDurumu.DEVAM_EDIYOR);
+
+        } else {
+
+            project.setDurum(ProjeDurumu.PLANLANDI);
+
+        }
+
+        projectRepository.save(project);
+
         return weeklyReportMapper.toResponse(report);
     }
 
@@ -89,5 +135,4 @@ public class WeeklyReportService {
 
         weeklyReportRepository.delete(report);
     }
-
 }

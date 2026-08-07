@@ -8,3 +8,50 @@
     flex:1;
     padding:30px;
 }
+.detail-footer{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    margin-top:30px;
+
+}
+
+.back-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    background:#2563EB;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:12px 22px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.back-btn:hover{
+
+    background:#1D4ED8;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 12px 22px rgba(37,99,235,.25);
+
+}

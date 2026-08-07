@@ -8,10 +8,9 @@ import {
   MdFolder,
   MdDescription,
   MdPeople,
-  MdSettings,
   MdLogout,
+  MdAddCircle,
 } from "react-icons/md";
-
 function Sidebar() {
   const rol = localStorage.getItem("rol");
   const { logout } = useAuth();
@@ -23,9 +22,15 @@ function Sidebar() {
   return (
     <aside className="sidebar">
 
-      <div className="logo">
-    <h2>CTO</h2>
-    <p>Proje Takip Sistemi</p>
+  <div className="logo">
+    <div className="logo-icon">
+        <MdDashboard />
+    </div>
+
+    <div className="logo-text">
+        <h2>Proje</h2>
+        <p>Takip Sistemi</p>
+    </div>
 </div>
 
       <ul>
@@ -39,21 +44,32 @@ function Sidebar() {
           <span>Projeler</span>
         </NavLink>
 
+{(rol === "ADMIN" || rol === "CTO") && (
+  <NavLink to="/projects/new" className="menu-item sub-menu">
+    <MdAddCircle />
+    <span>Yeni Proje</span>
+  </NavLink>
+)} 
         <NavLink to="/weekly-reports" className="menu-item">
   <MdDescription />
   <span>Haftalık Raporlar</span>
 </NavLink>
+{(rol === "ADMIN" ||
+  rol === "CTO" ||
+  rol === "PROJECT_MANAGER") && (
+  <NavLink
+    to="/weekly-reports/new"
+    className="menu-item sub-menu"
+  >
+    <MdAddCircle />
+    <span>Yeni Haftalık Rapor</span>
+  </NavLink>
+)}
 
     {rol === "ADMIN" && (
   <NavLink to="/users" className="menu-item">
     <MdPeople />
     <span>Kullanıcılar</span>
-  </NavLink>
-)}
-       {(rol === "ADMIN" || rol === "CTO") && (
-  <NavLink to="/settings" className="menu-item">
-    <MdSettings />
-    <span>Ayarlar</span>
   </NavLink>
 )}
         <li className="logout" onClick={handleLogout}>

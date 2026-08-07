@@ -11,61 +11,98 @@ import {
 
 import { useEffect, useState } from "react";
 import {
-    getProjects,
-    getProjectsByManager,
-    deleteProject
+  getProjects,
+  getProjectsByManager,
+  deleteProject,
 } from "../../../services/projectService";
 
-function ProjectTable({ durumFiltresi, aramaMetni }) {
-  
+function ProjectTable({
+    durumFiltresi,
+    oncelikFiltresi,
+    yoneticiFiltresi,
+    aramaMetni
+}) {
   const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
   const { rol, kullaniciId } = useAuth();
- const loadProjects = async () => {
+
+  const loadProjects = async () => {
     try {
+      let data;
 
-        let data;
+      if (rol === "PROJECT_MANAGER") {
+        data = await getProjectsByManager(kullaniciId);
+      } else {
+        data = await getProjects();
+      }
 
-        if (rol === "PROJECT_MANAGER") {
-            data = await getProjectsByManager(kullaniciId);
-        } else {
-            data = await getProjects();
-        }
-
-        setProjects(data);
-
+      setProjects(data);
     } catch (error) {
-        console.error("Projeler alınamadı:", error);
+      console.error("Projeler alınamadı:", error);
     }
-};
+  };
 
-const handleDelete = async (id) => {
-
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
-        "Bu projeyi silmek istediğinize emin misiniz?"
+      "Bu projeyi silmek istediğinize emin misiniz?"
     );
 
     if (!confirmDelete) return;
 
     try {
+      await deleteProject(id);
 
-        await deleteProject(id);
+      alert("Proje başarıyla silindi.");
 
-        alert("Proje başarıyla silindi.");
-
-        loadProjects();
-
+      loadProjects();
     } catch (error) {
-
-        console.error(error);
-
-        alert("Proje silinemedi.");
+      console.error(error);
+      alert("Proje silinemedi.");
     }
-};
+  };
+
+  // Kalan Süre Hesaplama
+  const getDeliveryStatus = (project) => {
+    if (project.durum === "TAMAMLANDI") {
+      return {
+        text: "Tamamlandı",
+        className: "delivery-completed",
+      };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const deadline = new Date(project.bitisTarihi);
+    deadline.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.ceil(
+      (deadline - today) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays < 0) {
+      return {
+        text: `${Math.abs(diffDays)} gün gecikti`,
+        className: "delivery-late",
+      };
+    }
+
+    if (diffDays === 0) {
+      return {
+        text: "Bugün teslim",
+        className: "delivery-today",
+      };
+    }
+
+    return {
+      text: `${diffDays} gün kaldı`,
+      className: "delivery-normal",
+    };
+  };
 
   useEffect(() => {
     loadProjects();
-}, []);
+  }, []);
 
   return (
     <div className="project-table-container">
@@ -77,111 +114,146 @@ const handleDelete = async (id) => {
             <th>Durum</th>
             <th>İlerleme</th>
             <th>Bitiş Tarihi</th>
+            <th>Kalan Süre</th>
             <th>İşlemler</th>
           </tr>
         </thead>
 
         <tbody>
-  {projects
-    .filter((project) => {
-      const durumUygun =
-        durumFiltresi === "" || project.durum === durumFiltresi;
+          {projects
+            .filter((project) => {
 
-      const aramaUygun =
+    const durumUygun =
+        durumFiltresi === "" ||
+        project.durum === durumFiltresi;
+
+    const oncelikUygun =
+        oncelikFiltresi === "" ||
+        project.oncelik === oncelikFiltresi;
+
+    const yoneticiUygun =
+        yoneticiFiltresi === "" ||
+        project.projeYoneticisiId === Number(yoneticiFiltresi);
+
+    const aramaUygun =
         project.projeAdi
-          .toLowerCase()
-          .includes(aramaMetni.toLowerCase());
+            .toLowerCase()
+            .includes(aramaMetni.toLowerCase());
 
-      return durumUygun && aramaUygun;
-    })
-    .map((project) => (
-            <tr key={project.id}>
-              <td>{project.projeAdi}</td>
+    return (
+        durumUygun &&
+        oncelikUygun &&
+        yoneticiUygun &&
+        aramaUygun
+    );
 
-              <td>
-                <div className="manager-info">
-                  <MdPerson className="manager-icon" />
-                  <span>{project.projeYoneticisi}</span>
-                </div>
-              </td>
+})
+            .map((project) => (
+              <tr key={project.id}>
+                <td>{project.projeAdi}</td>
 
-             <td>
-  <span
-    className="status"
-   style={{
-  backgroundColor:
-    project.durum === "PLANLANDI"
-      ? "#F5F5F5"
-      : project.tamamlanmaYuzdesi <= 30
-      ? "#FFEBEE"
-      : project.tamamlanmaYuzdesi <= 70
-      ? "#FFF3E0"
-      : project.tamamlanmaYuzdesi < 100
-      ? "#E8F5E9"
-      : "#D0F0C0",
+                <td>
+                  <div className="manager-info">
+                    <MdPerson className="manager-icon" />
+                    <span>{project.projeYoneticisi}</span>
+                  </div>
+                </td>
 
-  color:
-    project.durum === "PLANLANDI"
-      ? "#9CA3AF"
-      : project.tamamlanmaYuzdesi <= 30
-      ? "#C62828"
-      : project.tamamlanmaYuzdesi <= 70
-      ? "#EF6C00"
-      : project.tamamlanmaYuzdesi < 100
-      ? "#67af6b"
-      : "#02830b",
-}}
-  >
-    {project.durum === "DEVAM_EDIYOR"
-  ? "Devam Ediyor"
-  : project.durum === "BEKLEMEDE"
-  ? "Beklemede"
-  : project.durum === "RISKLI"
-  ? "Riskli"
-  : project.durum === "TAMAMLANDI"
-  ? "Tamamlandı"
-  : "Planlandı"}
-  </span>
-</td>
+                <td>
+                  <span
+                    className="status"
+                    style={{
+                      backgroundColor:
+                        project.durum === "PLANLANDI"
+                          ? "#F5F5F5"
+                          : project.tamamlanmaYuzdesi <= 30
+                          ? "#FFEBEE"
+                          : project.tamamlanmaYuzdesi <= 70
+                          ? "#FFF3E0"
+                          : project.tamamlanmaYuzdesi < 100
+                          ? "#E8F5E9"
+                          : "#D0F0C0",
 
-              <td>
-                <ProgressBar
-                  progress={project.tamamlanmaYuzdesi}
-                />
-              </td>
+                      color:
+                        project.durum === "PLANLANDI"
+                          ? "#9CA3AF"
+                          : project.tamamlanmaYuzdesi <= 30
+                          ? "#C62828"
+                          : project.tamamlanmaYuzdesi <= 70
+                          ? "#EF6C00"
+                          : project.tamamlanmaYuzdesi < 100
+                          ? "#67af6b"
+                          : "#02830b",
+                    }}
+                  >
+                    {project.durum === "DEVAM_EDIYOR"
+                      ? "Devam Ediyor"
+                      : project.durum === "BEKLEMEDE"
+                      ? "Beklemede"
+                      : project.durum === "RISKLI"
+                      ? "Riskli"
+                      : project.durum === "TAMAMLANDI"
+                      ? "Tamamlandı"
+                      : "Planlandı"}
+                  </span>
+                </td>
 
-              <td>{project.bitisTarihi}</td>
+                <td>
+                  <ProgressBar
+                    progress={project.tamamlanmaYuzdesi}
+                  />
+                </td>
 
-              <td>
-                <div className="action-buttons">
-                  <button
-  className="view-btn"
-  onClick={() => navigate(`/projects/${project.id}`)}
->
-  <MdVisibility />
-</button>
+                <td>{project.bitisTarihi}</td>
 
-                {(rol === "ADMIN" || rol === "CTO") && (
-  <button
-    className="edit-btn"
-    onClick={() => navigate(`/projects/edit/${project.id}`)}
-  >
-    <MdEdit />
-  </button>
-)}
+                <td>
+                  <span
+                    className={
+                      getDeliveryStatus(project).className
+                    }
+                  >
+                    {getDeliveryStatus(project).text}
+                  </span>
+                </td>
 
-  {(rol === "ADMIN" || rol === "CTO") && (
-  <button
-    className="delete-btn"
-    onClick={() => handleDelete(project.id)}
-  >
-    <MdDelete />
-  </button>
-)}
-                </div>
-              </td>
-            </tr>
-          ))}
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      className="view-btn"
+                      onClick={() =>
+                        navigate(`/projects/${project.id}`)
+                      }
+                    >
+                      <MdVisibility />
+                    </button>
+
+                    {(rol === "ADMIN" ||
+                      rol === "CTO" ||
+                      rol === "PROJECT_MANAGER") && (
+                      <button
+                        className="edit-btn"
+                        onClick={() =>
+                          navigate(`/projects/edit/${project.id}`)
+                        }
+                      >
+                        <MdEdit />
+                      </button>
+                    )}
+
+                    {(rol === "ADMIN" || rol === "CTO") && (
+                      <button
+                        className="delete-btn"
+                        onClick={() =>
+                          handleDelete(project.id)
+                        }
+                      >
+                        <MdDelete />
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

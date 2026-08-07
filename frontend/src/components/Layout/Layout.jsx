@@ -1,16 +1,21 @@
-import Header from "../Header/Header";
+import "./Layout.css";
 import Sidebar from "../Sidebar/Sidebar";
+import Header from "../Header/Header";
 
-function Layout({ children }) {
+function Layout({ children, showHeader = true }) {
   return (
     <div className="dashboard-layout">
+
       <Sidebar />
 
       <div className="dashboard-content">
-        <Header />
+
+        {showHeader && <Header />}
 
         {children}
+
       </div>
+
     </div>
   );
 }

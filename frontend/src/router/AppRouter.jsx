@@ -10,7 +10,6 @@ import WeeklyReportDetail from "../pages/WeeklyReports/WeeklyReportDetail";
 import ProjectDetail from "../pages/Projects/ProjectDetail";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Users from "../pages/Users/Users";
-import Settings from "../pages/Settings/Settings";
 
 function AppRouter() {
   return (
@@ -44,10 +43,10 @@ function AppRouter() {
         }
       />
 
-      <Route
+<Route
   path="/projects/edit/:id"
   element={
-    <ProtectedRoute roles={["ADMIN", "CTO"]}>
+    <ProtectedRoute roles={["ADMIN", "CTO", "PROJECT_MANAGER"]}>
       <NewProject />
     </ProtectedRoute>
   }
@@ -107,14 +106,6 @@ function AppRouter() {
         }
       />
 
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute roles={["ADMIN", "CTO"]}>
-            <Settings />
-          </ProtectedRoute>
-        }
-      />
     </Routes>
   );
 }

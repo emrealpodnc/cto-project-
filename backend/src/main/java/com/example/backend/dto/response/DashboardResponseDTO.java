@@ -15,6 +15,11 @@ public class DashboardResponseDTO {
 
     private Long riskliProje;
 
-    private Long toplamRapor;
+    private Long yuksekOncelikliProje;
 
+    private Long buHaftaEklenenRapor;
+    
+    private Long planlananProje;
+
+    private Long beklemedeProje;  
 }

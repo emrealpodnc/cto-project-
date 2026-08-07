@@ -1,29 +1,54 @@
 import "./WeeklyReportForm.css";
+
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { getProjects } from "../../../services/projectService";
+
+import { useAuth } from "../../../context/AuthContext";
+
+import {
+    getProjects,
+    getProjectsByManager
+} from "../../../services/projectService";
+
 import {
     createWeeklyReport,
-    getWeeklyReportById,
-    updateWeeklyReport
+    updateWeeklyReport,
+    getWeeklyReportById
 } from "../../../services/weeklyReportService";
-import { useNavigate } from "react-router-dom";
-function WeeklyReportForm({ reportId })  {
+
+function WeeklyReportForm({ reportId }) {
+
     const navigate = useNavigate();
+
+    const { rol, kullaniciId } = useAuth();
+
     const [projects, setProjects] = useState([]);
 
     const [report, setReport] = useState({
+
         projectId: "",
+
         haftaNo: "",
+
         raporTarihi: "",
+
         tamamlanmaYuzdesi: 0,
+
         buHaftaYapilanlar: "",
+
         devamEdenIsler: "",
+
         riskler: "",
+
         engeller: "",
+
         gelecekHaftaPlani: "",
+
         genelNot: ""
+
     });
 
     useEffect(() => {
@@ -32,13 +57,23 @@ function WeeklyReportForm({ reportId })  {
 
             try {
 
-                const data = await getProjects();
+                let data;
+
+                if (rol === "PROJECT_MANAGER") {
+
+                    data = await getProjectsByManager(kullaniciId);
+
+                } else {
+
+                    data = await getProjects();
+
+                }
 
                 setProjects(data);
 
             } catch (error) {
 
-                console.error("Projeler yüklenemedi:", error);
+                console.error(error);
 
             }
 
@@ -46,254 +81,328 @@ function WeeklyReportForm({ reportId })  {
 
         loadProjects();
 
-    }, []);
+    }, [rol, kullaniciId]);
 
     useEffect(() => {
 
-    if (!reportId) return;
+        if (!reportId) return;
 
-    const loadReport = async () => {
+        const loadReport = async () => {
+
+            try {
+
+                const data = await getWeeklyReportById(reportId);
+
+                setReport({
+
+                    projectId: data.projectId,
+
+                    haftaNo: data.haftaNo,
+
+                    raporTarihi: data.raporTarihi,
+
+                    tamamlanmaYuzdesi: data.tamamlanmaYuzdesi,
+
+                    buHaftaYapilanlar: data.buHaftaYapilanlar,
+
+                    devamEdenIsler: data.devamEdenIsler,
+
+                    riskler: data.riskler,
+
+                    engeller: data.engeller,
+
+                    gelecekHaftaPlani: data.gelecekHaftaPlani,
+
+                    genelNot: data.genelNot
+
+                });
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        };
+
+        loadReport();
+
+    }, [reportId]);
+
+    const handleChange = (e) => {
+
+        const { name, value } = e.target;
+
+        setReport((prev) => ({
+
+            ...prev,
+
+            [name]: value
+
+        }));
+
+    };
+
+    const handleSave = async () => {
 
         try {
 
-            const data = await getWeeklyReportById(reportId);
+            if (reportId) {
 
-            setReport({
-                projectId: data.projectId,
-                haftaNo: data.haftaNo,
-                raporTarihi: data.raporTarihi,
-                tamamlanmaYuzdesi: data.tamamlanmaYuzdesi,
-                buHaftaYapilanlar: data.buHaftaYapilanlar,
-                devamEdenIsler: data.devamEdenIsler,
-                riskler: data.riskler,
-                engeller: data.engeller,
-                gelecekHaftaPlani: data.gelecekHaftaPlani,
-                genelNot: data.genelNot
-            });
+                await updateWeeklyReport(reportId, report);
+
+                alert("Haftalık rapor güncellendi.");
+
+            } else {
+
+                await createWeeklyReport(report);
+
+                alert("Haftalık rapor oluşturuldu.");
+
+            }
+
+            navigate("/weekly-reports");
 
         } catch (error) {
 
             console.error(error);
-            alert("Rapor bilgileri yüklenemedi.");
+
+            alert("İşlem başarısız.");
 
         }
 
     };
+        return (
 
-    loadReport();
+        <div className="weekly-report-page">
 
-}, [reportId]);
-const handleChange = (e) => {
+             <div className="weekly-header-card">
 
-    const { name, value } = e.target;
+                <div className="weekly-title">
 
-    setReport((prev) => ({
-        ...prev,
-        [name]: value
-    }));
+                    <h2>
+                        {reportId
+                            ? "Haftalık Rapor Güncelle"
+                            : "Yeni Haftalık Rapor"}
+                    </h2>
 
-};
+                    <p>
+                        {reportId
+                            ? "Haftalık rapor bilgilerini güncelleyebilirsiniz."
+                            : "Projeye ait haftalık gelişmeleri giriniz."
+                        }
+                    </p>
 
-    const handleSave = async () => {
+                </div>
+                </div>
 
-    try {
+                <div className="weekly-form">
 
-        if (reportId) {
+                    <div className="weekly-row">
 
-            await updateWeeklyReport(reportId, report);
+                        <div className="weekly-group">
 
-            alert("Haftalık rapor başarıyla güncellendi.");
+                            <label>Proje</label>
 
-        } else {
+                            <Autocomplete
+                                options={projects}
+                                getOptionLabel={(option) => option.projeAdi}
+                                value={
+                                    projects.find(
+                                        (project) =>
+                                            project.id === Number(report.projectId)
+                                    ) || null
+                                }
+                                onChange={(event, newValue) => {
 
-            await createWeeklyReport(report);
+                                    setReport({
 
-            alert("Haftalık rapor başarıyla oluşturuldu.");
+                                        ...report,
 
-        }
+                                        projectId: newValue
+                                            ? newValue.id
+                                            : ""
 
-        navigate("/weekly-reports");
+                                    });
 
-    } catch (error) {
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Proje seçiniz..."
+                                    />
+                                )}
+                            />
 
-        console.error(error);
+                        </div>
 
-        alert("Rapor kaydedilemedi.");
+                        <div className="weekly-group">
 
-    }
+                            <label>Hafta No</label>
 
-};
+                            <input
+                                type="number"
+                                name="haftaNo"
+                                value={report.haftaNo}
+                                onChange={handleChange}
+                                placeholder="Örn: 25"
+                            />
 
-    return (
+                        </div>
 
-        <div className="weekly-report-form">
+                    </div>
 
-            <h2>{reportId ? "Haftalık Rapor Güncelle" : "Haftalık Rapor"}</h2>
+                    <div className="weekly-row">
 
-            <div className="form-group">
+                        <div className="weekly-group">
 
-                <label>Proje</label>
+                            <label>Rapor Tarihi</label>
 
-                <Autocomplete
-                    options={projects}
-                    getOptionLabel={(option) => option.projeAdi}
-                    value={
-                        projects.find(
-                            (project) => project.id === Number(report.projectId)
-                        ) || null
-                    }
-                    onChange={(event, newValue) => {
+                            <input
+                                type="date"
+                                name="raporTarihi"
+                                value={report.raporTarihi}
+                                onChange={handleChange}
+                            />
 
-                        setReport({
+                        </div>
 
-                            ...report,
+                        <div className="weekly-group">
 
-                            projectId: newValue ? newValue.id : ""
+                            <label>Tamamlanma (%)</label>
 
-                        });
+                            <input
+                                type="number"
+                                name="tamamlanmaYuzdesi"
+                                min="0"
+                                max="100"
+                                value={report.tamamlanmaYuzdesi}
+                                onChange={handleChange}
+                            />
 
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Proje"
-                            placeholder="Proje seçiniz"
+                        </div>
+
+                    </div>
+                                        <div className="weekly-group">
+
+                        <label>Bu Hafta Yapılanlar</label>
+
+                        <textarea
+                            name="buHaftaYapilanlar"
+                            value={report.buHaftaYapilanlar}
+                            onChange={handleChange}
+                            rows={5}
+                            placeholder="Bu hafta yapılan işleri yazınız..."
                         />
-                    )}
-                />
+
+                    </div>
+
+                    <div className="weekly-group">
+
+                        <label>Devam Eden İşler</label>
+
+                        <textarea
+                            name="devamEdenIsler"
+                            value={report.devamEdenIsler}
+                            onChange={handleChange}
+                            rows={5}
+                            placeholder="Devam eden işleri yazınız..."
+                        />
+
+                    </div>
+
+                    <div className="weekly-row">
+
+                        <div className="weekly-group">
+
+                            <label>Riskler</label>
+
+                            <textarea
+                                name="riskler"
+                                value={report.riskler}
+                                onChange={handleChange}
+                                rows={5}
+                                placeholder="Riskleri yazınız..."
+                            />
+
+                        </div>
+
+                        <div className="weekly-group">
+
+                            <label>Engeller</label>
+
+                            <textarea
+                                name="engeller"
+                                value={report.engeller}
+                                onChange={handleChange}
+                                rows={5}
+                                placeholder="Engelleri yazınız..."
+                            />
+
+                        </div>
+
+                    </div>
+
+                    <div className="weekly-row">
+
+                        <div className="weekly-group">
+
+                            <label>Gelecek Hafta Planı</label>
+
+                            <textarea
+                                name="gelecekHaftaPlani"
+                                value={report.gelecekHaftaPlani}
+                                onChange={handleChange}
+                                rows={5}
+                                placeholder="Gelecek hafta planını yazınız..."
+                            />
+
+                        </div>
+
+                        <div className="weekly-group">
+
+                            <label>Genel Not</label>
+
+                            <textarea
+                                name="genelNot"
+                                value={report.genelNot}
+                                onChange={handleChange}
+                                rows={5}
+                                placeholder="Varsa ek not..."
+                            />
+
+                        </div>
+
+                    </div>
+
+                    <div className="weekly-buttons">
+
+                        <button
+                            type="button"
+                            className="weekly-cancel-btn"
+                            onClick={() => navigate("/weekly-reports")}
+                        >
+                            İptal
+                        </button>
+
+                        <button
+                            type="button"
+                            className="weekly-save-btn"
+                            onClick={handleSave}
+                        >
+                            {reportId ? "Güncelle" : "Kaydet"}
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
-            <div className="form-group">
+            
 
-    <label>Hafta No</label>
-
-    <input
-        type="number"
-        name="haftaNo"
-        value={report.haftaNo}
-        onChange={handleChange}
-        placeholder="Örneğin: 30"
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Rapor Tarihi</label>
-
-    <input
-        type="date"
-        name="raporTarihi"
-        value={report.raporTarihi}
-        onChange={handleChange}
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Tamamlanma Yüzdesi</label>
-
-    <input
-        type="number"
-        name="tamamlanmaYuzdesi"
-        value={report.tamamlanmaYuzdesi}
-        onChange={handleChange}
-        min="0"
-        max="100"
-        placeholder="0-100"
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Bu Hafta Yapılanlar</label>
-
-    <textarea
-        name="buHaftaYapilanlar"
-        value={report.buHaftaYapilanlar}
-        onChange={handleChange}
-        rows="4"
-        placeholder="Bu hafta tamamlanan işleri yazınız..."
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Devam Eden İşler</label>
-
-    <textarea
-        name="devamEdenIsler"
-        value={report.devamEdenIsler}
-        onChange={handleChange}
-        rows="4"
-        placeholder="Devam eden işleri yazınız..."
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Riskler</label>
-
-    <textarea
-        name="riskler"
-        value={report.riskler}
-        onChange={handleChange}
-        rows="4"
-        placeholder="Projedeki riskleri yazınız..."
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Engeller</label>
-
-    <textarea
-        name="engeller"
-        value={report.engeller}
-        onChange={handleChange}
-        rows="4"
-        placeholder="Karşılaşılan engelleri yazınız..."
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Gelecek Hafta Planı</label>
-
-    <textarea
-        name="gelecekHaftaPlani"
-        value={report.gelecekHaftaPlani}
-        onChange={handleChange}
-        rows="4"
-        placeholder="Gelecek hafta yapılacak işleri yazınız..."
-    />
-
-</div>
-<div className="form-group">
-
-    <label>Genel Not</label>
-
-    <textarea
-        name="genelNot"
-        value={report.genelNot}
-        onChange={handleChange}
-        rows="4"
-        placeholder="Varsa eklemek istediğiniz not..."
-    />
-
-</div>
-<div className="button-group">
-
-    <button
-    className="save-btn"
-    onClick={handleSave}
->
-    {reportId ? "Güncelle" : "Kaydet"}
-</button>
-
-</div>
-        </div>
-
+        
     );
+
 }
 
 export default WeeklyReportForm;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Layout from "../../components/Layout/Layout";
 import {
     createProject,
     getProjectById,
@@ -116,55 +117,73 @@ const handleSave = async () => {
 
         alert("İşlem başarısız!");
     }
-};;
+};
   return (
-    <div className="new-project-page">
+    <Layout showHeader={false}>
 
-      <h1>{id ? "Projeyi Düzenle" : "Yeni Proje"}</h1>
+        <div className="new-project-page">
 
-<p className="page-description">
-  {id
-    ? "Proje bilgilerini güncelleyebilirsiniz."
-    : "Yeni bir proje oluşturmak için aşağıdaki bilgileri doldurun."}
-</p>
+      <div className="form-title">
+
+    <h2>
+        {id ? "Projeyi Güncelle" : "Yeni Proje"}
+    </h2>
+
+    <p>
+        {id
+            ? "Proje bilgilerini güncelleyebilirsiniz."
+            : "Projeye ait temel bilgileri giriniz."}
+    </p>
+
+</div>
+</div>
+
       <div className="project-form">
 
         <div className="form-group">
-          <label>Proje Adı</label>
-        <input
-    type="text"
-    name="projeAdi"
-    placeholder="proje adını giriniz"
-    value={proje.projeAdi}
-    onChange={handleChange}
-/>
-        </div>
+    <div className="form-row">
 
-        <div className="form-group">
-          <label>Proje Yöneticisi</label>
-  <Autocomplete
-    options={users}
-    getOptionLabel={(option) => option.adSoyad}
-    value={
-        users.find((user) => user.id === Number(proje.projeYoneticisiId)) || null
-    }
-    onChange={(event, newValue) => {
+  <div className="form-group">
+    <label>Proje Adı</label>
+
+    <input
+      type="text"
+      name="projeAdi"
+      placeholder="Proje adını giriniz"
+      value={proje.projeAdi}
+      onChange={handleChange}
+    />
+  </div>
+
+  <div className="form-group">
+    <label>Proje Yöneticisi</label>
+
+    <Autocomplete
+      options={users}
+      getOptionLabel={(option) => option.adSoyad}
+      value={
+        users.find(
+          (user) => user.id === Number(proje.projeYoneticisiId)
+        ) || null
+      }
+      onChange={(event, newValue) => {
         setProje({
-            ...proje,
-            projeYoneticisiId: newValue ? newValue.id : ""
+          ...proje,
+          projeYoneticisiId: newValue ? newValue.id : "",
         });
-    }}
-    renderInput={(params) => (
+      }}
+      renderInput={(params) => (
         <TextField
-            {...params}
-            label="Proje Yöneticisi"
-            placeholder="Yazarak arayın..."
+          {...params}
+          placeholder="Yönetici seçiniz..."
         />
-    )}
-/>
-        </div>
+      )}
+    />
+  </div>
 
-    <div className="date-row">
+</div>
+
+    <div className="form-row">
 
   <div className="form-group">
     <label>Başlangıç Tarihi</label>
@@ -190,20 +209,38 @@ const handleSave = async () => {
 
         
 
-        <div className="form-group">
-    <label>Durum</label>
+        <div className="form-row">
 
-    <select
-        name="durum"
-        value={proje.durum}
-        onChange={handleChange}
-    >
-        <option value="PLANLANDI">Planlandı</option>
-        <option value="DEVAM_EDIYOR">Devam Ediyor</option>
-        <option value="BEKLEMEDE">Beklemede</option>
-        <option value="TAMAMLANDI">Tamamlandı</option>
-        <option value="RISKLI">Riskli</option>
-    </select>
+    <div className="form-group">
+        <label>Durum</label>
+
+        <select
+            name="durum"
+            value={proje.durum}
+            onChange={handleChange}
+        >
+            <option value="PLANLANDI">Planlandı</option>
+            <option value="DEVAM_EDIYOR">Devam Ediyor</option>
+            <option value="BEKLEMEDE">Beklemede</option>
+            <option value="TAMAMLANDI">Tamamlandı</option>
+            <option value="RISKLI">Riskli</option>
+        </select>
+    </div>
+
+    <div className="form-group">
+        <label>Öncelik</label>
+
+        <select
+            name="oncelik"
+            value={proje.oncelik}
+            onChange={handleChange}
+        >
+            <option value="DUSUK">Düşük</option>
+            <option value="ORTA">Orta</option>
+            <option value="YUKSEK">Yüksek</option>
+        </select>
+    </div>
+
 </div>
         <div className="form-group">
   <label>İlerleme Durumu (%{proje.tamamlanmaYuzdesi})</label>
@@ -268,10 +305,13 @@ const handleSave = async () => {
 
         </div>
 
-      </div>
+            </div> {/* project-form */}
 
-    </div>
-  );
+    </div> {/* new-project-page */}
+
+  </Layout>
+
+);
 }
 
 export default NewProject;

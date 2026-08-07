@@ -1,29 +1,31 @@
 import "./WeeklyReportToolbar.css";
-import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
-function WeeklyReportToolbar() {
-  const navigate = useNavigate();
+function WeeklyReportToolbar({ aramaMetni, setAramaMetni }) {
 
-  return (
-    <div className="project-toolbar">
 
-      <h2>📝 Haftalık Raporlar</h2>
+    return (
 
-      <div className="toolbar-actions">
+        <div className="weekly-report-toolbar">
 
-        <input
-          type="text"
-          placeholder="🔍 Rapor Ara..."
-        />
 
-        <button onClick={() => navigate("/weekly-reports/new")}>
-          + Yeni Rapor
-        </button>
+            <div className="weekly-search">
 
-      </div>
+                <FaSearch className="search-icon" />
 
-    </div>
-  );
+                <input
+                    type="text"
+                    placeholder="Rapor Ara..."
+                    value={aramaMetni}
+                    onChange={(e) => setAramaMetni(e.target.value)}
+                />
+
+            </div>
+
+        </div>
+
+    );
+
 }
 
 export default WeeklyReportToolbar;

@@ -1,15 +1,13 @@
 package com.example.backend.service;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.example.backend.dto.request.UserRequestDTO;
 import com.example.backend.dto.request.UserUpdateRequestDTO;
 import com.example.backend.dto.response.UserResponseDTO;
 import com.example.backend.entity.User;
+import com.example.backend.enums.Role;
 import com.example.backend.mapper.UserMapper;
 import com.example.backend.repository.UserRepository;
 import org.springframework.util.StringUtils;
@@ -21,14 +19,14 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                       UserMapper userMapper,
-                       PasswordEncoder passwordEncoder) {
+   public UserService(UserRepository userRepository,
+                   UserMapper userMapper,
+                   PasswordEncoder passwordEncoder) {
 
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+    this.userRepository = userRepository;
+    this.userMapper = userMapper;
+    this.passwordEncoder = passwordEncoder;
+}
 
     public UserResponseDTO kullaniciKaydet(UserRequestDTO dto) {
 
@@ -52,6 +50,21 @@ public class UserService {
                 .map(userMapper::toResponse)
                 .collect(Collectors.toList());
     }
+    
+
+  public List<UserResponseDTO> projeYoneticileriniGetir() {
+
+    return userRepository.findAllByOrderByAdSoyadAsc()
+            .stream()
+            .filter(user ->
+                    user.getRol() == Role.ADMIN ||
+                    user.getRol() == Role.CTO ||
+                    user.getRol() == Role.PROJECT_MANAGER
+            )
+            .map(userMapper::toResponse)
+            .collect(Collectors.toList());
+
+}
 
     public UserResponseDTO kullaniciGetir(Long id) {
 
@@ -74,7 +87,11 @@ public class UserService {
 
         user.setAdSoyad(dto.getAdSoyad());
         user.setKullaniciAdi(dto.getKullaniciAdi());
-        user.setRol(dto.getRol());
+        if (dto.getRol() != null) {
+            user.setRol(dto.getRol());
+        } else if (user.getRol() == null) {
+            user.setRol(Role.PROJECT_MANAGER);
+        }
         if (dto.getAktifMi() != null) {
     user.setAktifMi(dto.getAktifMi());
 }
@@ -97,5 +114,4 @@ public class UserService {
 
         userRepository.save(user);
     }
-
 }

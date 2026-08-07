@@ -1,47 +1,64 @@
 import { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
-import { FaChartLine, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
+import {
+    FaChartLine,
+    FaEye,
+    FaEyeSlash,
+    FaUser,
+    FaLock
+} from "react-icons/fa";
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [kullaniciAdi, setKullaniciAdi] = useState("");
     const [sifre, setSifre] = useState("");
+    const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
     const navigate = useNavigate();
     const { login } = useAuth();
-    const handleLogin = async () => {
-  console.log("Login butonuna basıldı");
-  try {
-    const response = await fetch("http://localhost:8086/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-     body: JSON.stringify({
-  kullaniciAdi,
-  sifre,
-}),
-    });
+  const handleLogin = async () => {
 
-    const data = await response.json();
+    setLoading(true);
+    setError("");
 
-    if (response.ok) {
+    try {
 
- login(data);
+        const response = await fetch("http://localhost:8086/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                kullaniciAdi,
+                sifre,
+            }),
+        });
 
-  alert("Giriş başarılı.");
+        if (!response.ok) {
 
-  navigate("/dashboard");
+            setError("Kullanıcı adı veya şifre hatalı.");
+            return;
 
-} else {
+        }
 
-  alert("Kullanıcı adı veya şifre hatalı.");
+        const data = await response.json();
 
-}
-  }catch (error) {
-  console.error("Hata:", error);
-  alert("Sunucuya bağlanılamadı.");
-}
+        login(data);
+
+        navigate("/dashboard");
+
+    } catch (error) {
+
+        console.error(error);
+        setError("Sunucuya bağlanılamadı.");
+
+    } finally {
+
+        setLoading(false);
+
+    }
+
 };
   return (
     <div className="login-container">
@@ -65,42 +82,62 @@ function Login() {
         <div className="login-form">
   <label>Kullanıcı Adı</label>
 
-<input
-  type="text"
-  name="kullaniciAdi"
-  placeholder="Kullanıcı adınızı giriniz"
-  value={kullaniciAdi}
-  onChange={(e) => setKullaniciAdi(e.target.value)}
-  autoComplete="off"
-/>
+<div className="input-group">
+
+    <FaUser className="input-icon"/>
+
+    <input
+        type="text"
+        placeholder="Kullanıcı adınızı giriniz"
+        value={kullaniciAdi}
+        onChange={(e)=>setKullaniciAdi(e.target.value)}
+        onKeyDown={(e)=>e.key==="Enter" && handleLogin()}
+    />
+
+</div>
   <label>Şifre</label>
+<div className="password-input">
 
-  <div className="password-input">
+    <FaLock className="input-icon"/>
 
-  <input
-  type={showPassword ? "text" : "password"}
-  name="sifre"
-  placeholder="Şifrenizi giriniz"
-  value={sifre}
-  onChange={(e) => setSifre(e.target.value)}
-  autoComplete="off"
-/>
+    <input
+        type={showPassword ? "text" : "password"}
+        placeholder="Şifrenizi giriniz"
+        value={sifre}
+        onChange={(e)=>setSifre(e.target.value)}
+        onKeyDown={(e)=>e.key==="Enter" && handleLogin()}
+    />
 
-  <button
-    type="button"
-    className="eye-button"
-    onClick={() => setShowPassword(!showPassword)}
-  >
-    {showPassword ? <FaEyeSlash /> : <FaEye />}
-  </button>
+    <button
+        type="button"
+        className="eye-button"
+        onClick={()=>setShowPassword(!showPassword)}
+    >
+        {showPassword ? <FaEyeSlash/> : <FaEye/>}
+    </button>
 
 </div>
 
-  <button
-  className="login-button"
-  onClick={handleLogin}
+{
+error &&
+<div className="error-message">
+    {error}
+</div>
+}
+
+ <div style={{ marginTop: 10, textAlign: "right" }}>
+  </div>
+
+ <button
+    className="login-button"
+    onClick={handleLogin}
+    disabled={loading}
 >
-  Giriş Yap
+    {
+        loading
+        ? "Giriş Yapılıyor..."
+        : "Giriş Yap"
+    }
 </button>
   
 </div>

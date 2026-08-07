@@ -11,23 +11,41 @@ import { useEffect, useState } from "react";
 
 import {
   getWeeklyReports,
+  getWeeklyReportsByManager,
   deleteWeeklyReport,
 } from "../../../services/weeklyReportService";
 
-function WeeklyReportTable() {
+function WeeklyReportTable({ aramaMetni }) {
 
   const [reports, setReports] = useState([]);
 
   const navigate = useNavigate();
-  const { rol, kullaniciAdi } = useAuth();
+  const { rol, kullaniciId } = useAuth();
   const loadReports = async () => {
-    try {
-      const data = await getWeeklyReports();
-      setReports(data);
-    } catch (error) {
-      console.error("Raporlar alınamadı:", error);
+
+  try {
+
+    let data;
+
+    if (rol === "PROJECT_MANAGER") {
+
+      data = await getWeeklyReportsByManager(kullaniciId);
+
+    } else {
+
+      data = await getWeeklyReports();
+
     }
-  };
+
+    setReports(data);
+
+  } catch (error) {
+
+    console.error("Raporlar alınamadı:", error);
+
+  }
+
+};
 
   const handleDelete = async (id) => {
 
@@ -81,7 +99,19 @@ function WeeklyReportTable() {
 
         <tbody>
 
-          {reports.map((report) => (
+          {reports
+  .filter((report) => {
+
+    if (aramaMetni === "") {
+      return true;
+    }
+
+    return report.projeAdi
+      .toLowerCase()
+      .includes(aramaMetni.toLowerCase());
+
+  })
+  .map((report) => (
 
             <tr key={report.id}>
 

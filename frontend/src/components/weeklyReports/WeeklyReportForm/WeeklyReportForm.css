@@ -1,5 +1,266 @@
-.weekly-report-form {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
+/* ===========================
+   SAYFA
+=========================== */
+
+.weekly-report-page{
+    width:100%;
+    max-width:100%;
+    margin:20px auto;
+    padding:35px;
+    box-sizing:border-box;
+}
+
+/* ===========================
+   ANA KART
+=========================== */
+
+
+/* ===========================
+   BAŞLIK
+=========================== */
+
+.weekly-title{
+    margin-bottom:30px;
+    padding-bottom:20px;
+    border-bottom:1px solid #E2E8F0;
+}
+
+.weekly-title h2{
+    margin:0;
+    font-size:36px;
+    font-weight:700;
+    color:#0F172A;
+}
+
+.weekly-title p{
+    margin-top:8px;
+    color:#64748B;
+    font-size:16px;
+}
+.weekly-header-card{
+
+    background:#fff;
+
+    border-radius:16px;
+
+    box-shadow:0 8px 24px rgba(15,23,42,.08);
+
+    padding:35px;
+
+    margin-bottom:25px;
+
+}
+.weekly-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+
+}
+
+/* ===========================
+   FORM
+=========================== */
+
+.weekly-form{
+
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+
+    margin-top:30px;
+
+    padding:35px 0;
+
+}
+
+/* ===========================
+   SATIR
+=========================== */
+
+.weekly-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+}
+
+/* ===========================
+   FORM GROUP
+=========================== */
+
+.weekly-group{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.weekly-group label{
+    font-size:15px;
+    font-weight:600;
+    color:#334155;
+}
+
+/* ===========================
+   INPUT
+=========================== */
+
+.weekly-group input,
+.weekly-group textarea{
+
+    width:100%;
+    padding:14px 18px;
+
+    border:1px solid #CBD5E1;
+    border-radius:12px;
+
+    background:#ffffff;
+
+    color:#334155;
+    font-size:15px;
+
+    transition:.25s;
+
+    box-sizing:border-box;
+
+}
+
+.weekly-group input{
+    height:50px;
+}
+
+.weekly-group textarea{
+    resize:vertical;
+    min-height:150px;
+    line-height:1.6;
+}
+
+.weekly-group input::placeholder,
+.weekly-group textarea::placeholder{
+    color:#94A3B8;
+}
+
+.weekly-group input:focus,
+.weekly-group textarea:focus{
+
+    outline:none;
+
+    border-color:#2563EB;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.15);
+
+}
+
+/* ===========================
+   MATERIAL UI
+=========================== */
+
+.MuiOutlinedInput-root{
+    border-radius:12px !important;
+}
+
+.MuiOutlinedInput-notchedOutline{
+    border-color:#CBD5E1 !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline{
+    border-color:#94A3B8 !important;
+}
+
+.Mui-focused .MuiOutlinedInput-notchedOutline{
+    border-color:#2563EB !important;
+    border-width:2px !important;
+}
+
+.MuiInputBase-input{
+    font-size:15px !important;
+    color:#334155 !important;
+}
+
+/* ===========================
+   BUTONLAR
+=========================== */
+
+.weekly-buttons{
+
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+
+    margin-top:15px;
+
+}
+
+.weekly-cancel-btn,
+.weekly-save-btn{
+
+    height:46px;
+
+    padding:0 24px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.weekly-cancel-btn{
+
+    background:#E2E8F0;
+
+    color:#334155;
+
+}
+
+.weekly-cancel-btn:hover{
+
+    background:#CBD5E1;
+
+}
+
+.weekly-save-btn{
+
+    background:#2563EB;
+
+    color:#ffffff;
+
+}
+
+.weekly-save-btn:hover{
+
+    background:#1D4ED8;
+
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:900px){
+
+    .weekly-row{
+        grid-template-columns:1fr;
+    }
+
+    .weekly-report-page{
+        padding:25px;
+    }
+
+    .weekly-report-card{
+        padding:25px;
+    }
+
+}
+
+*{
+    box-sizing:border-box;
 }

@@ -6,16 +6,23 @@
 
     align-items:center;
 
-    gap:30px;
+    padding:18px 32px;
 
-    background:white;
+    border-radius:16px;
 
-    padding:20px;
+    background:linear-gradient(
+        135deg,
+        #ffffff,
+        #f8fafc
+    );
 
-    border-radius:12px;
+    box-shadow:0 8px 24px rgba(15,23,42,.08);
 
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    margin-bottom:18px;
 
+}
+.header{
+    margin-bottom:16px;
 }
 
 .header-right{
@@ -27,3 +34,44 @@
     gap:30px;
 
 }
+
+.header-left h1{
+
+    margin:0;
+
+    font-size:32px;
+
+    font-weight:700;
+
+    color:#1E293B;
+
+}
+.header-left p{
+
+    margin-top:4px;
+
+    margin-bottom:0;
+
+    font-size:16px;
+
+    color:#64748B;
+
+}
+.username{
+
+    font-size:18px;
+
+    font-weight:600;
+
+    color:#1E293B;
+
+}
+
+.user-icon{
+
+    color:#2563EB;
+
+    font-size:40px;
+
+}
+

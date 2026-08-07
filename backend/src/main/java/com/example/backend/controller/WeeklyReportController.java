@@ -31,6 +31,14 @@ public class WeeklyReportController {
     public List<WeeklyReportResponseDTO> tumRaporlariGetir() {
         return weeklyReportService.tumRaporlariGetir();
     }
+    
+    @GetMapping("/manager/{kullaniciId}")
+public List<WeeklyReportResponseDTO> projeYoneticisininRaporlari(
+        @PathVariable Long kullaniciId) {
+
+    return weeklyReportService.projeYoneticisininRaporlari(kullaniciId);
+
+}
 
     @GetMapping("/{id}")
     public WeeklyReportResponseDTO raporGetir(@PathVariable Long id) {
